@@ -31,7 +31,7 @@ const AdminUserPage = () => {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td className="py-2 px-4 border-b">{user.name}</td>
+              <td className="py-2 px-4 border-b">{user.username}</td>
               <td className="py-2 px-4 border-b">{user.email}</td>
               <td className="py-2 px-4 border-b">
                 <button className="bg-yellow-500 text-white py-1 px-3 rounded mr-2">

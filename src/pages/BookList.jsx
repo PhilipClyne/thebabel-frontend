@@ -5,10 +5,10 @@ function BookList() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingBook, setEditingBook] = useState(null); // Quản lý trạng thái của sách đang chỉnh sửa
+  const [editingBook, setEditingBook] = useState(null);
   const [formData, setFormData] = useState({
-    bookTitle: "",
-    authorName: "",
+    title: "",
+    author: "",
     isbn: "",
     publicationYear: "",
     category: "",
@@ -16,7 +16,7 @@ function BookList() {
     quantity: "",
     description: "",
     img: "",
-  }); // Dữ liệu của form chỉnh sửa
+  });
 
   useEffect(() => {
     async function fetchBooks() {
@@ -39,7 +39,7 @@ function BookList() {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:8080/api/books/${id}`);
-      setBooks(books.filter((book) => book.id !== id)); // Cập nhật danh sách sách sau khi xóa
+      setBooks(books.filter((book) => book.id !== id));
     } catch (err) {
       console.error("Error deleting book:", err.message);
     }
@@ -47,7 +47,7 @@ function BookList() {
 
   const handleEdit = (book) => {
     setEditingBook(book);
-    setFormData(book); // Điền sẵn dữ liệu sách vào form để chỉnh sửa
+    setFormData(book);
   };
 
   const handleFormChange = (e) => {
@@ -61,32 +61,33 @@ function BookList() {
         `http://localhost:8080/api/books/${editingBook.id}`,
         formData
       );
-      // Cập nhật lại danh sách sách sau khi chỉnh sửa
       setBooks(
         books.map((book) =>
           book.id === editingBook.id ? { ...book, ...formData } : book
         )
       );
-      setEditingBook(null); // Đặt lại trạng thái chỉnh sửa
+      setEditingBook(null);
     } catch (err) {
       console.error("Error updating book:", err.message);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="text-center">Loading...</p>;
+  if (error) return <p className="text-center text-red-600">Error: {error}</p>;
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-brown-700">Book List</h2>
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="container mx-auto p-4">
+      <h2 className="text-3xl font-bold text-brown-700 mb-6">Book List</h2>
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {books.map((book) => (
-          <li key={book.id} className="p-4 border border-brown-300 rounded-lg">
-            {/* Hiển thị hình ảnh của sách */}
+          <li
+            key={book.id}
+            className="bg-white p-4 border border-brown-300 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+          >
             <img
               src={book.img}
-              alt={`Cover of ${book.bookTitle}`}
-              className="w-full h-48 object-cover mb-4"
+              alt={`Cover of ${book.title}`}
+              className="w-full h-48 object-cover mb-4 rounded"
             />
             <h3 className="text-xl font-semibold text-brown-600">
               {book.title}
@@ -99,110 +100,17 @@ function BookList() {
             <p className="text-brown-400">Price: ${book.price}</p>
             <p className="text-brown-400">Quantity: {book.quantity}</p>
             <p className="text-brown-400">Description: {book.description}</p>
-            <button
-              onClick={() => handleEdit(book)}
-              className="bg-yellow-500 text-white p-2 rounded mr-2"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDelete(book.id)}
-              className="bg-red-500 text-white p-2 rounded"
-            >
-              Delete
-            </button>
+            <div className="mt-4 items-center">
+              <button className="bg-yellow-500 text-white p-2 rounded mr-2 hover:bg-yellow-600 transition">
+                Buy
+              </button>
+              <button className="bg-orange-500 text-white p-2 rounded hover:bg-red-600 transition">
+                Read Online
+              </button>
+            </div>
           </li>
         ))}
       </ul>
-
-      {/* Hiển thị form chỉnh sửa nếu đang ở trạng thái chỉnh sửa */}
-      {editingBook && (
-        <div className="mt-4">
-          <h3 className="text-xl font-semibold">
-            Edit Book: {editingBook.title}
-          </h3>
-          <form>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleFormChange}
-              placeholder="Title"
-              className="border p-2 mb-2 block w-full"
-            />
-            <input
-              type="text"
-              name="author"
-              value={formData.author}
-              onChange={handleFormChange}
-              placeholder="Author"
-              className="border p-2 mb-2 block w-full"
-            />
-            <input
-              type="text"
-              name="isbn"
-              value={formData.isbn}
-              onChange={handleFormChange}
-              placeholder="ISBN"
-              className="border p-2 mb-2 block w-full"
-            />
-            <input
-              type="number"
-              name="publicationYear"
-              value={formData.publicationYear}
-              onChange={handleFormChange}
-              placeholder="Publication Year"
-              className="border p-2 mb-2 block w-full"
-            />
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleFormChange}
-              placeholder="Category"
-              className="border p-2 mb-2 block w-full"
-            />
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleFormChange}
-              placeholder="Price"
-              className="border p-2 mb-2 block w-full"
-            />
-            <input
-              type="number"
-              name="quantity"
-              value={formData.quantity}
-              onChange={handleFormChange}
-              placeholder="Quantity"
-              className="border p-2 mb-2 block w-full"
-            />
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleFormChange}
-              placeholder="Description"
-              className="border p-2 mb-2 block w-full"
-            ></textarea>
-            <input
-              type="text"
-              name="img"
-              value={formData.img}
-              onChange={handleFormChange}
-              placeholder="Image URL"
-              className="border p-2 mb-2 block w-full"
-            />
-            <button
-              type="button"
-              onClick={handleUpdate}
-              className="bg-green-500 text-white p-2 rounded"
-            >
-              Update Book
-            </button>
-          </form>
-        </div>
-      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import axios from "axios";
 
 const AdminBookPage = () => {
   const [books, setBooks] = useState([]);
+  const [editingBookId, setEditingBookId] = useState(null);
   const [formData, setFormData] = useState({
     bookTitle: "",
     authorName: "",
@@ -14,7 +15,6 @@ const AdminBookPage = () => {
     description: "",
     img: "",
   });
-  const [editingBookId, setEditingBookId] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -30,24 +30,11 @@ const AdminBookPage = () => {
     }
   };
 
-  const addBook = async () => {
+  const updateBook = async (id) => {
     try {
-      await axios.post("http://localhost:8080/api/books", formData);
+      await axios.put(`http://localhost:8080/api/books/${id}`, formData);
       fetchBooks();
-      resetForm();
-    } catch (err) {
-      setError("Error adding book");
-    }
-  };
-
-  const updateBook = async () => {
-    try {
-      await axios.put(
-        `http://localhost:8080/api/books/${editingBookId}`,
-        formData
-      );
-      fetchBooks();
-      resetForm();
+      setEditingBookId(null); // Exit editing mode after update
     } catch (err) {
       setError("Error updating book");
     }
@@ -62,26 +49,18 @@ const AdminBookPage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (editingBookId) {
-      updateBook();
-    } else {
-      addBook();
-    }
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleEdit = (book) => {
-    setEditingBookId(book.id);
-    setFormData(book);
+    setEditingBookId(book.id); // Set the currently editing book's ID
+    setFormData(book); // Pre-fill the form data with the selected book's info
   };
 
-  const resetForm = () => {
+  const handleCancelEdit = () => {
+    setEditingBookId(null); // Exit editing mode without saving
     setFormData({
       bookTitle: "",
       authorName: "",
@@ -93,99 +72,12 @@ const AdminBookPage = () => {
       description: "",
       img: "",
     });
-    setEditingBookId(null);
   };
 
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-3xl font-bold text-brown-700 mb-6">Manage Books</h2>
       {error && <p className="text-red-500 mb-4">{error}</p>}
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-lg mb-8"
-      >
-        <div className="grid text-center grid-cols-2 gap-4 mb-4">
-          <input
-            type="text"
-            name="bookTitle"
-            value={formData.bookTitle}
-            onChange={handleInputChange}
-            placeholder="Book Title"
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            name="authorName"
-            value={formData.authorName}
-            onChange={handleInputChange}
-            placeholder="Author Name"
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            name="isbn"
-            value={formData.isbn}
-            onChange={handleInputChange}
-            placeholder="ISBN"
-            className="border p-2 rounded"
-          />
-          <input
-            type="number"
-            name="publicationYear"
-            value={formData.publicationYear}
-            onChange={handleInputChange}
-            placeholder="Publication Year"
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-            placeholder="Category"
-            className="border p-2 rounded"
-          />
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleInputChange}
-            placeholder="Price"
-            className="border p-2 rounded"
-          />
-          <input
-            type="number"
-            name="quantity"
-            value={formData.quantity}
-            onChange={handleInputChange}
-            placeholder="Quantity"
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Description"
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            name="img"
-            value={formData.img}
-            onChange={handleInputChange}
-            placeholder="Image URL"
-            className="border p-2 rounded"
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-brown-600 hover:bg-brown-500 text-white py-2 px-4 rounded"
-        >
-          {editingBookId ? "Update Book" : "Add Book"}
-        </button>
-      </form>
 
       <table className="min-w-full bg-white text-center shadow-lg rounded">
         <thead className="bg-brown-600 text-white">
@@ -203,27 +95,113 @@ const AdminBookPage = () => {
         <tbody>
           {books.map((book) => (
             <tr key={book.id} className="hover:bg-gray-100">
-              <td className="py-2 px-4 border-b">{book.bookTitle}</td>
-              <td className="py-2 px-4 border-b">{book.authorName}</td>
-              <td className="py-2 px-4 border-b">{book.isbn}</td>
-              <td className="py-2 px-4 border-b">{book.publicationYear}</td>
-              <td className="py-2 px-4 border-b">{book.category}</td>
-              <td className="py-2 px-4 border-b">{book.price}</td>
-              <td className="py-2 px-4 border-b">{book.quantity}</td>
-              <td className="py-2 px-4 border-b">
-                <button
-                  onClick={() => handleEdit(book)}
-                  className="bg-yellow-500 hover:bg-yellow-400 text-white py-1 px-3 rounded mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => deleteBook(book.id)}
-                  className="bg-red-500 hover:bg-red-400 text-white py-1 px-3 rounded"
-                >
-                  Delete
-                </button>
-              </td>
+              {editingBookId === book.id ? (
+                <>
+                  {/* Render input fields for inline editing */}
+                  <td className="py-2 px-4 border-b">
+                    <input
+                      type="text"
+                      name="bookTitle"
+                      value={formData.bookTitle}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                    />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <input
+                      type="text"
+                      name="authorName"
+                      value={formData.authorName}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                    />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <input
+                      type="text"
+                      name="isbn"
+                      value={formData.isbn}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                    />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <input
+                      type="number"
+                      name="publicationYear"
+                      value={formData.publicationYear}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                    />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                    />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <input
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                    />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={formData.quantity}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded"
+                    />
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <button
+                      onClick={() => updateBook(book.id)}
+                      className="bg-green-500 hover:bg-green-400 text-white py-1 px-3 rounded mr-2"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="bg-gray-500 hover:bg-gray-400 text-white py-1 px-3 rounded"
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  {/* Render regular text when not editing */}
+                  <td className="py-2 px-4 border-b">{book.bookTitle}</td>
+                  <td className="py-2 px-4 border-b">{book.authorName}</td>
+                  <td className="py-2 px-4 border-b">{book.isbn}</td>
+                  <td className="py-2 px-4 border-b">{book.publicationYear}</td>
+                  <td className="py-2 px-4 border-b">{book.category}</td>
+                  <td className="py-2 px-4 border-b">{book.price}</td>
+                  <td className="py-2 px-4 border-b">{book.quantity}</td>
+                  <td className="py-2 px-4 border-b">
+                    <button
+                      onClick={() => handleEdit(book)}
+                      className="bg-yellow-500 hover:bg-yellow-400 text-white py-1 px-3 rounded mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteBook(book.id)}
+                      className="bg-red-500 hover:bg-red-400 text-white py-1 px-3 rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>

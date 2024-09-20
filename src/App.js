@@ -8,6 +8,7 @@ import BookList from "./pages/BookList";
 import AdminBookPage from "./components/AdminBookPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUserPage from "./components/AdminUserPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/books" element={<BookList />} />
+          <Route path="/login" element={<LoginPage />} />
+
           <Route path="/admin/*" element={<AdminDashboard />} />
           <Route path="/admin/books" element={<AdminBookPage />} />
           <Route path="/admin/users" element={<AdminUserPage />} />
