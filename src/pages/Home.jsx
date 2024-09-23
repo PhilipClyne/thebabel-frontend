@@ -17,7 +17,9 @@ function Home() {
       try {
         const response = await axios.get("http://localhost:8080/api/books");
         setBooks(response.data);
-        const categoryList = [...new Set(response.data.map((book) => book.category))];
+        const categoryList = [
+          ...new Set(response.data.map((book) => book.category)),
+        ];
         setCategories(categoryList);
       } catch (err) {
         setError(err.message);
@@ -66,26 +68,6 @@ function Home() {
 
   return (
     <div className="p-4 bg-gradient-to-b from-white to-brown-100">
-      {/* Category Filter */}
-      <div className="mb-8 text-center">
-        <label htmlFor="category" className="mr-4 font-semibold text-brown-700">
-          Filter by Category:
-        </label>
-        <select
-          id="category"
-          value={selectedCategory}
-          onChange={handleCategoryChange}
-          className="border border-brown-300 p-2 rounded"
-        >
-          <option value="">All Categories</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {/* Featured Books Carousel */}
       <div className="my-12">
         <h3 className="text-3xl font-bold text-brown-700 text-center mb-8">
@@ -109,6 +91,26 @@ function Home() {
             </div>
           ))}
         </Slider>
+      </div>
+
+      {/* Category Filter */}
+      <div className="mb-8 text-center">
+        <label htmlFor="category" className="mr-4 font-semibold text-brown-700">
+          Filter by Category:
+        </label>
+        <select
+          id="category"
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+          className="border border-brown-300 p-2 rounded"
+        >
+          <option value="">All Categories</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Book List */}

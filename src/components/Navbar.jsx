@@ -59,6 +59,22 @@ function Navbar() {
               Contact
             </Link>
           </li>
+          <li>
+            <Link
+              to="/login"
+              className="hover:bg-brown-700 px-4 py-2 rounded-md transition-colors duration-200 ease-in-out"
+            >
+              Login
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/Register"
+              className="hover:bg-brown-700 px-4 py-2 rounded-md transition-colors duration-200 ease-in-out"
+            >
+              Register
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>

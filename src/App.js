@@ -11,6 +11,7 @@ import AdminUserPage from "./components/AdminUserPage";
 import LoginPage from "./pages/LoginPage";
 import OpenLibrarySearch from "./pages/OpenLibrarySearch";
 import BookDetail from "./pages/BookDetail";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   return (
@@ -23,10 +24,10 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/books" element={<BookList />} />
           <Route path="/open" element={<OpenLibrarySearch />} />
-          <Route path="/book/:bookId" element={<BookDetail />} /> {/* Route cho chi tiết sách */}
+          <Route path="/book/:id" element={<BookDetail />} />{" "}
+          {/* Route cho chi tiết sách */}
           <Route path="/login" element={<LoginPage />} />
-          
-
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
           <Route path="/admin/books" element={<AdminBookPage />} />
           <Route path="/admin/users" element={<AdminUserPage />} />

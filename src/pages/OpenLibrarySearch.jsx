@@ -34,6 +34,7 @@ function OpenLibrarySearch() {
 
       const response = await axios.get(url);
       setBooks(response.data.docs);
+      console.log(response.data.docs); // In ra tất cả các sản phẩm
     } catch (err) {
       setError("Có lỗi xảy ra khi tìm kiếm.");
     } finally {
@@ -114,7 +115,7 @@ function OpenLibrarySearch() {
               Năm xuất bản: {book.first_publish_year || "Không có thông tin"}
             </p>
             <Link
-              to={`/book/${book.key.split("/")[2]}`}
+              to={`/book/${book.key.split("/")[2]}`} // Cập nhật đường dẫn để lấy ID
               className="bg-brown-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-brown-700 transition-colors duration-200"
             >
               Xem chi tiết
